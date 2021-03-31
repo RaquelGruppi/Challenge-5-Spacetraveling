@@ -1,6 +1,8 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import Prismic from '@prismicio/client';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import { RichText } from 'prismic-dom';
 import Header from '../../components/Header';
 import { getPrismicClient } from '../../services/prismic';
@@ -30,19 +32,6 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps): JSX.Element {
-  function format(date: string): string {
-    return new Date(date)
-      .toLocaleDateString('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
-      .replace('de ', '')
-      .replace('de ', '')
-      .replace('.', '');
-  }
-
   const { isFallback } = useRouter();
 
   const totalWorlds = post?.data?.content?.reduce(
@@ -62,7 +51,11 @@ export default function Post({ post }: PostProps): JSX.Element {
       ) : (
         <div className={styles.container}>
           <img src={post.data.banner.url} alt="Banner" />
-          <time>{format(post.first_publication_date)}</time>
+          <time>
+            {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
+              locale: ptBR,
+            })}
+          </time>
           <strong>{readTime} min</strong>
           <strong>{post.data.title}</strong>
           <p>{post.data.author}</p>

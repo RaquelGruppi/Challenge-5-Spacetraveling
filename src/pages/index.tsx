@@ -2,6 +2,8 @@ import { GetStaticProps } from 'next';
 import Prismic from '@prismicio/client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -27,25 +29,16 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
-  function format(date: string): string {
-    return new Date(date)
-      .toLocaleDateString('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
-      .replace('de ', '')
-      .replace('de ', '')
-      .replace('.', '');
-  }
-
   const [next_page, setNext_page] = useState(postsPagination.next_page);
   const [posts, setPosts] = useState(
     postsPagination.results.map(post => {
       return {
         uid: post.uid,
-        first_publication_date: format(post.first_publication_date),
+        first_publication_date: format(
+          new Date(post.first_publication_date),
+          'dd MMM yyyy',
+          { locale: ptBR }
+        ),
         data: {
           title: post.data.title,
           subtitle: post.data.subtitle,
@@ -62,7 +55,11 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
     const newPosts = data.results.map(post => {
       return {
         uid: post.uid,
-        first_publication_date: format(post.first_publication_date),
+        first_publication_date: format(
+          new Date(post.first_publication_date),
+          'dd MMM yyyy',
+          { locale: ptBR }
+        ),
         data: {
           title: post.data.title,
           subtitle: post.data.subtitle,
